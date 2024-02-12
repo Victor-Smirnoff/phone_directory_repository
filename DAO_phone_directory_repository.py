@@ -2,6 +2,7 @@ import csv
 
 from custom_error import PageError, LineError
 from error_response import ErrorResponse
+from model import PhoneDirectoryModel
 
 CSV_FILE = 'phone_directory_data.csv'
 
@@ -65,7 +66,7 @@ class PhoneDirectoryRepository:
             dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
             row_count = sum(1 for _ in dict_redader_obj)
-            if page not in range(1, row_count + 1):
+            if page not in range(1, (row_count // max_lines_per_page) + 1):
                 raise PageError(page, max_lines_per_page)
 
     def add_line(self, sirname: str, name: str, patronym: str, organization_name: str, work_phone: str, personal_phone: str):
@@ -299,13 +300,9 @@ class PhoneDirectoryRepository:
 
 
 
-phone_directory_obj = PhoneDirectoryRepository()
-
-line = phone_directory_obj.find_by_personal_phone('+7 (929) 012-34-56')
-
-print(*line, sep='\n')
-
-
+# phone_directory_obj = PhoneDirectoryRepository()
+#
+#
 # new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
 #
 # phone_directory_obj.add_line(*new_line)

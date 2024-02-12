@@ -1,54 +1,30 @@
+from DAO_phone_directory_repository import PhoneDirectoryRepository
+from handler import Handler
+from model import PhoneDirectoryModel
+from error_response import ErrorResponse
+from custom_error import PageError, LineError
 
 
+phone_directory_obj = PhoneDirectoryRepository()
+handler_obj = Handler()
+
+print('Приветствую Вас на реализации телефонного справочника!')
+print()
+while True:
+    print('Вывод постранично записей из справочника на экран - напишите цифру 1')
+    print('Добавление новой записи в справочник - напишите цифру 2')
+    print('Возможность редактирования записей в справочнике - напишите цифру 3')
+    print('Поиск записей по одной или нескольким характеристикам - напишите цифру 4')
+    print('Если хотите выйти из программы - напишите что угодно или не пишите вообще ничего')
+    print()
+    answer = input('Введите цифру 1, 2, 3 или 4 для работы со справочником: ')
+
+    if answer not in ('1', '2', '3', '4'):
+        break
+
+    if answer == '1':
+        handler_obj.get_line_dict_handler()
 
 
-
-
-
-
-
-
-
-
-def find_by_sirname(sirname):
-    """
-    Метод для поиска записи в справочнике по фамилии
-    :param sirname: фамилия
-    :return:
-    """
-
-def find_by_name(name):
-    """
-    Метод для поиска записи в справочнике по имени
-    :param name: имя
-    :return:
-    """
-
-def find_by_patronym(patronym):
-    """
-    Метод для поиска записи в справочнике по отчеству
-    :param patronym: отчество
-    :return:
-    """
-
-def find_by_organization_name(organization_name):
-    """
-    Метод для поиска записи в справочнике по имени организации
-    :param organization_name: имя организации
-    :return:
-    """
-
-
-def find_by_work_phone(work_phone):
-    """
-    Метод для поиска записи в справочнике по рабочему телефону
-    :param work_phone: рабочий телефон
-    :return:
-    """
-
-def find_by_personal_phone(personal_phone):
-    """
-    Метод для поиска записи в справочнике по личному телефону
-    :param personal_phone: личный телефон
-    :return:
-    """
+print()
+print('Спасибо за Ваш выбор! До новых встреч!')
