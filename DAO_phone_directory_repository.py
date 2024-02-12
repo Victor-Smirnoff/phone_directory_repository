@@ -181,6 +181,32 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
+    def find_by_patronym(self, patronym):
+        """
+        Метод для поиска записи в справочнике по отчеству
+        :param patronym: отчество
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['отчество'] == patronym:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(patronym)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
 
     def edit_line(self):
         """
@@ -194,7 +220,7 @@ class PhoneDirectoryRepository:
 
 phone_directory_obj = PhoneDirectoryRepository()
 
-line = phone_directory_obj.find_by_name('Татьяна')
+line = phone_directory_obj.find_by_patronym('Дмитриевич')
 
 print(*line, sep='\n')
 
