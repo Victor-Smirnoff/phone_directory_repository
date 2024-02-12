@@ -1,21 +1,8 @@
-import csv
 
 
 
-def get_line_list(page: int, quantity_lines_per_page: int):
-    """
-    Метод выполняет вывод постранично записей из справочника на экран
-    :param page: номер страницы
-    :param quantity_lines_per_page: количество записей на одной странице
-    :return: итерируемый объект со строками для печати их в консоль
-    """
-    try:
-        with open('data.csv', 'r', encoding='UTF-8') as file:
-            rows = csv.DictReader(file, delimiter=';', quotechar='"')
-        return rows
-    except Exception as e:
-        message = {'message': f'Произошла ошибка чтения справочиника - {str(e)}'}
-        return message
+
+
 
 
 def add_line(sirname: str, name: str, patronym: str, organization_name: str, work_phone: str, personal_phone: str):
@@ -29,7 +16,7 @@ def add_line(sirname: str, name: str, patronym: str, organization_name: str, wor
     :param personal_phone: телефон личный (сотовый)
     :return: None
     """
-    with open('data.csv', 'a+', encoding='UTF-8', newline='') as file:
+    with open('phone_directory_data.csv', 'a+', encoding='UTF-8', newline='') as file:
         writer = csv.writer(file, delimiter=';')
         writer.writerow((sirname, name, patronym, organization_name, work_phone, personal_phone))
 
