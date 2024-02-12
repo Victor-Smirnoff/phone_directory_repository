@@ -3,10 +3,12 @@ from handler import Handler
 from model import PhoneDirectoryModel
 from error_response import ErrorResponse
 from custom_error import PageError, LineError
+from router import Router
 
 
 phone_directory_obj = PhoneDirectoryRepository()
 handler_obj = Handler()
+router = Router()
 
 print('Приветствую Вас на реализации телефонного справочника!')
 print()
@@ -19,11 +21,11 @@ while True:
     print()
     answer = input('Введите цифру 1, 2, 3 или 4 для работы со справочником: ')
 
-    if answer not in ('1', '2', '3', '4'):
+    if answer not in ('1', '2', '3', '4'):                  # Если ответ пользователя не 1-2-3-4, то выходим из цикла и завершаем программу
         break
 
-    if answer == '1':
-        handler_obj.get_line_dict_handler()
+    handler_obj = router.determine_handler_method(answer)   # Используем роутер для выбора функции-обработчика
+    handler_obj()                                           # Вызываем функцию-обработчик
 
 
 print()
