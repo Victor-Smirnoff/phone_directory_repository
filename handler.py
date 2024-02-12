@@ -1,10 +1,14 @@
 from DAO_phone_directory_repository import PhoneDirectoryRepository
+from model import PhoneDirectoryModel
 
 
 class Handler:
     """
     Класс для выполнения всех реализованных возможностей по работе с телефонным справочником
     """
+
+    dao_obj = PhoneDirectoryRepository()
+
     def get_line_dict_handler(self):
         """
         Метод работает в цикле после ввода пользователя цифры 1
@@ -31,8 +35,7 @@ class Handler:
             page = int(page)
             max_lines_per_page = int(max_lines_per_page)
 
-            dao_obj = PhoneDirectoryRepository()
-            lines = dao_obj.get_line_dict(page, max_lines_per_page)
+            lines = self.dao_obj.get_line_dict(page, max_lines_per_page)
 
             if type(lines) == dict:
                 print(*lines.values(), sep='\n')
@@ -69,6 +72,51 @@ class Handler:
         Обрабатывает запросы на добавление новой записи в справочник
         :return: None
         """
+        while True:
+            print('Добавление новой записи в справочник')
+            print()
+            print('Для добавления новой записи в справочник необходимо ввести следующие данные')
+            print()
+            sirname = input('Введите фамилию: ')
+            name = input('Введите имя: ')
+            patronym = input('Введите отчество: ')
+            organization_name = input('Введите название организации: ')
+            work_phone = input('Введите телефон рабочий: ')
+            personal_phone = input('Введите телефон личный (сотовый): ')
+            new_line_id = self.dao_obj.get_last_id() + 1
+
+            new_line_obj = PhoneDirectoryModel(new_line_id, sirname, name, patronym, organization_name, work_phone, personal_phone)
+
+            try:
+                self.dao_obj.add_line(new_line_obj)
+
+                result_dict = {}
+                result_dict['id'] = new_line_id
+                result_dict['фамилия'] = sirname
+                result_dict['имя'] = name
+                result_dict['отчество'] = patronym
+                result_dict['название организации'] = organization_name
+                result_dict['телефон рабочий'] = work_phone
+                result_dict['телефон личный (сотовый)'] = personal_phone
+                print()
+                print('Добавление новой записи в справочник выполнено успешно!')
+                print()
+                print(str(result_dict))
+
+            except Exception as e:
+                print()
+                print(f'Ошибка добавления новой записи {str(e)}')
+
+            print()
+            print('Для добавления новой записи в справочник - нажмите 2')
+            print('Выйти в главное меню - напишите что угодно кроме цифры 2')
+
+            answer = input('Напишите 2 или что-то другое: ')
+            if answer != '2':
+                print()
+                break
+            else:
+                continue
 
     def edit_line_handler(self):
         """

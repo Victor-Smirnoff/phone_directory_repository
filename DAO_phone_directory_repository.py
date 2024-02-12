@@ -66,23 +66,26 @@ class PhoneDirectoryRepository:
             dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
             row_count = sum(1 for _ in dict_redader_obj)
-            if page not in range(1, (row_count // max_lines_per_page) + 1):
+            pages = (row_count // max_lines_per_page) + 1 if not (row_count % max_lines_per_page) else (row_count // max_lines_per_page) + 2
+            if page not in range(1, pages):
                 raise PageError(page, max_lines_per_page)
 
-    def add_line(self, sirname: str, name: str, patronym: str, organization_name: str, work_phone: str, personal_phone: str):
+    def add_line(self, new_line_obj: PhoneDirectoryModel):
         """
         Метод записывает новую строчку в файл
-        :param sirname: фамилия
-        :param name: имя
-        :param patronym: отчество
-        :param organization_name: название организации
-        :param work_phone: телефон рабочий
-        :param personal_phone: телефон личный (сотовый)
+        :param new_line_obj: объект класса PhoneDirectoryModel
         :return: None
         """
-        with open(CSV_FILE, 'a+', encoding='UTF-8', newline='') as csv_file:
+        new_line_id = new_line_obj.line_id
+        sirname = new_line_obj.sirname
+        name = new_line_obj.name
+        patronym = new_line_obj.patronym
+        organization_name = new_line_obj.organization_name
+        work_phone = new_line_obj.work_phone
+        personal_phone = new_line_obj.personal_phone
+
+        with (open(CSV_FILE, 'a+', encoding='UTF-8', newline='') as csv_file):
             writer = csv.writer(csv_file, delimiter=';')
-            new_line_id = self.get_last_id() + 1
             writer.writerow((new_line_id, sirname, name, patronym, organization_name, work_phone, personal_phone))
 
     def get_last_id(self):
