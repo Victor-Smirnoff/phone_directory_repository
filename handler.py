@@ -17,14 +17,14 @@ class Handler:
             page = input('Введите номер страницы: ')
             while True:
                 if not self.validate_param(page):
-                    page = input('Введите корректно номер страницы: ')
+                    page = input('Введите КОРРЕКТНО номер страницы: ')
                 else:
                     break
 
             max_lines_per_page = input('Введите максимальное количество записей на одной странице: ')
             while True:
                 if not self.validate_param(max_lines_per_page):
-                    max_lines_per_page = input('Введите корректно максимальное количество записей на одной странице: ')
+                    max_lines_per_page = input('Введите КОРРЕКТНО максимальное количество записей на одной странице: ')
                 else:
                     break
 
