@@ -8,11 +8,7 @@
 
 
 
-def edit_line():
-    """
-    Метод для редактирования записей в справочнике
-    :return: 
-    """""
+
 
 def find_by_sirname(sirname):
     """

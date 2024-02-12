@@ -1,6 +1,6 @@
 import csv
 
-from custom_error import PageError
+from custom_error import PageError, LineError
 from error_response import ErrorResponse
 
 CSV_FILE = 'phone_directory_data.csv'
@@ -100,18 +100,60 @@ class PhoneDirectoryRepository:
 
             return int(last_line['id'])
 
+    def find_by_id(self, line_id):
+        """
+        Метод для поиска записи в справочнике по айди записи
+        :param line_id: айди записи
+        :return: словарь с данными по строке
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                last_line = None
+
+                for row in dict_redader_obj:
+                    if row and int(row['id']) == line_id:
+                        last_line = row
+
+                if last_line is not None:
+                    return last_line
+                else:
+                    raise LineError(line_id)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+
+
+
+    def edit_line(self):
+        """
+        Метод для редактирования записей в справочнике
+        :return:
+        """
+
+
+
+
 
 phone_directory_obj = PhoneDirectoryRepository()
 
+line = phone_directory_obj.find_by_id(1)
 
-new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
-
-phone_directory_obj.add_line(*new_line)
+print(line)
 
 
-lines = phone_directory_obj.get_line_dict(page=3, max_lines_per_page=8)
-
-if type(lines) == dict:
-    print(*lines.values(), sep='\n')
-else:
-    print(lines)
+# new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
+#
+# phone_directory_obj.add_line(*new_line)
+#
+#
+# lines = phone_directory_obj.get_line_dict(page=3, max_lines_per_page=8)
+#
+# if type(lines) == dict:
+#     print(*lines.values(), sep='\n')
+# else:
+#     print(lines)
