@@ -5,20 +5,7 @@
 
 
 
-def add_line(sirname: str, name: str, patronym: str, organization_name: str, work_phone: str, personal_phone: str):
-    """
-    Метод записывает новую строчку в файл
-    :param sirname: фамилия
-    :param name: имя
-    :param patronym: отчество
-    :param organization_name: название организации
-    :param work_phone: телефон рабочий
-    :param personal_phone: телефон личный (сотовый)
-    :return: None
-    """
-    with open('phone_directory_data.csv', 'a+', encoding='UTF-8', newline='') as file:
-        writer = csv.writer(file, delimiter=';')
-        writer.writerow((sirname, name, patronym, organization_name, work_phone, personal_phone))
+
 
 
 def edit_line():

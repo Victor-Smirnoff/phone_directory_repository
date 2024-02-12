@@ -3,6 +3,8 @@ import csv
 from custom_error import PageError
 from error_response import ErrorResponse
 
+CSV_FILE = 'phone_directory_data.csv'
+
 
 class PhoneDirectoryRepository:
     """
@@ -18,7 +20,7 @@ class PhoneDirectoryRepository:
         """
         try:
             self.validate_page(page, max_lines_per_page)
-            with open('phone_directory_data.csv', 'r', encoding='UTF-8') as csv_file:
+            with open(CSV_FILE, 'r', encoding='UTF-8') as csv_file:
                 dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 if page == 1:
@@ -59,17 +61,55 @@ class PhoneDirectoryRepository:
         if type(max_lines_per_page) == int and max_lines_per_page <= 0:
             raise PageError(page, max_lines_per_page)
 
-        with open('phone_directory_data.csv', 'r', encoding='UTF-8') as csv_file:
+        with open(CSV_FILE, 'r', encoding='UTF-8') as csv_file:
             dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
             row_count = sum(1 for _ in dict_redader_obj)
             if page not in range(1, row_count + 1):
                 raise PageError(page, max_lines_per_page)
 
+    def add_line(self, sirname: str, name: str, patronym: str, organization_name: str, work_phone: str, personal_phone: str):
+        """
+        Метод записывает новую строчку в файл
+        :param sirname: фамилия
+        :param name: имя
+        :param patronym: отчество
+        :param organization_name: название организации
+        :param work_phone: телефон рабочий
+        :param personal_phone: телефон личный (сотовый)
+        :return: None
+        """
+        with open(CSV_FILE, 'a+', encoding='UTF-8', newline='') as csv_file:
+            writer = csv.writer(csv_file, delimiter=';')
+            new_line_id = self.get_last_id() + 1
+            writer.writerow((new_line_id, sirname, name, patronym, organization_name, work_phone, personal_phone))
+
+    def get_last_id(self):
+        """
+        Метод возвращает последний записанный id в csv файле CSV_FILE
+        :return: число номер id
+        """
+        with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+            dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+            last_line = None
+
+            for row in dict_redader_obj:
+                if row:
+                    last_line = row
+
+            return int(last_line['id'])
 
 
 phone_directory_obj = PhoneDirectoryRepository()
-lines = phone_directory_obj.get_line_dict(page=1, max_lines_per_page=5)
+
+
+new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
+
+phone_directory_obj.add_line(*new_line)
+
+
+lines = phone_directory_obj.get_line_dict(page=3, max_lines_per_page=8)
 
 if type(lines) == dict:
     print(*lines.values(), sep='\n')
