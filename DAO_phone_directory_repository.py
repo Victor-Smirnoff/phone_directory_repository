@@ -208,6 +208,87 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
+    def find_by_organization_name(self, organization_name):
+        """
+        Метод для поиска записи в справочнике по названию организации
+        :param organization_name: название организации
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['название организации'] == organization_name:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(organization_name)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+
+    def find_by_work_phone(self, work_phone):
+        """
+        Метод для поиска записи в справочнике по телефону рабочий
+        :param work_phone: телефон рабочий
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['телефон рабочий'] == work_phone:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(work_phone)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+
+    def find_by_personal_phone(self, personal_phone):
+        """
+        Метод для поиска записи в справочнике по телефону личный (сотовый)
+        :param personal_phone: телефон личный (сотовый)
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['телефон личный (сотовый)'] == personal_phone:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(personal_phone)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+
     def edit_line(self):
         """
         Метод для редактирования записей в справочнике
@@ -220,7 +301,7 @@ class PhoneDirectoryRepository:
 
 phone_directory_obj = PhoneDirectoryRepository()
 
-line = phone_directory_obj.find_by_patronym('Дмитриевич')
+line = phone_directory_obj.find_by_personal_phone('+7 (929) 012-34-56')
 
 print(*line, sep='\n')
 
