@@ -19,9 +19,9 @@ class PageError(Exception):
 
 
 class LineError(Exception):
-    def __init__(self, line_id, message='Ошибка поиска записи с id'):
-        self.line_id = line_id
-        self.message = f'{message}: “{self.line_id}”. Запись не найдена'
+    def __init__(self, param, message='Ошибка поиска записи'):
+        self.param = param
+        self.message = f'{message}: “{self.param}”. Запись не найдена'
         super().__init__(self.message)
 
     def __str__(self):

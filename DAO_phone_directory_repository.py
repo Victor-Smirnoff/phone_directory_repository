@@ -104,22 +104,49 @@ class PhoneDirectoryRepository:
         """
         Метод для поиска записи в справочнике по айди записи
         :param line_id: айди записи
-        :return: словарь с данными по строке
+        :return: словарь с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                last_line = None
+                found_line = None
 
                 for row in dict_redader_obj:
                     if row and int(row['id']) == line_id:
-                        last_line = row
+                        found_line = row
 
-                if last_line is not None:
-                    return last_line
+                if found_line is not None:
+                    return found_line
                 else:
                     raise LineError(line_id)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+
+    def find_by_sirname(self, sirname):
+        """
+        Метод для поиска записи в справочнике по фамилии
+        :param sirname: фамилия
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['фамилия'] == sirname:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(sirname)
 
         except Exception as e:
             error_type = {str(e)}
@@ -141,7 +168,7 @@ class PhoneDirectoryRepository:
 
 phone_directory_obj = PhoneDirectoryRepository()
 
-line = phone_directory_obj.find_by_id(1)
+line = phone_directory_obj.find_by_sirname('Беляев')
 
 print(line)
 
