@@ -154,6 +154,32 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
+    def find_by_name(self, name):
+        """
+        Метод для поиска записи в справочнике по имени
+        :param name: имя
+        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        """
+        try:
+            with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
+                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+                found_line = []
+
+                for row in dict_redader_obj:
+                    if row and row['имя'] == name:
+                        found_line.append(row)
+
+                if found_line:
+                    return found_line
+                else:
+                    raise LineError(name)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
 
 
     def edit_line(self):
@@ -168,9 +194,9 @@ class PhoneDirectoryRepository:
 
 phone_directory_obj = PhoneDirectoryRepository()
 
-line = phone_directory_obj.find_by_sirname('Беляев')
+line = phone_directory_obj.find_by_name('Татьяна')
 
-print(line)
+print(*line, sep='\n')
 
 
 # new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
