@@ -17,20 +17,7 @@ class PhoneDirectoryRepository:
         :return: итерируемый объект со строками для печати их в консоль или объект класса ErrorResponse
         """
         try:
-            with open('phone_directory_data.csv', 'r', encoding='UTF-8') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
-
-                if type(page) != int:
-                    raise PageError(page, max_lines_per_page)
-                if type(max_lines_per_page) != int:
-                    raise PageError(page, max_lines_per_page)
-                if type(max_lines_per_page) == int and max_lines_per_page <= 0:
-                    raise PageError(page, max_lines_per_page)
-
-                row_count = sum(1 for _ in dict_redader_obj)
-                if page not in range(1, row_count + 1):
-                    raise PageError(page, max_lines_per_page)
-
+            self.validate_page(page, max_lines_per_page)
             with open('phone_directory_data.csv', 'r', encoding='UTF-8') as csv_file:
                 dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
@@ -57,9 +44,32 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
+    def validate_page(self, page, max_lines_per_page):
+        """
+        Метод для валидации входных параметров номер страницы и количества записей на странице
+        Если параметры валидные, то метод вернет None, иначе - возбуждает исключение
+        :param page: номер страницы
+        :param max_lines_per_page: количество записей на странице
+        :return: None
+        """
+        if type(page) != int:
+            raise PageError(page, max_lines_per_page)
+        if type(max_lines_per_page) != int:
+            raise PageError(page, max_lines_per_page)
+        if type(max_lines_per_page) == int and max_lines_per_page <= 0:
+            raise PageError(page, max_lines_per_page)
+
+        with open('phone_directory_data.csv', 'r', encoding='UTF-8') as csv_file:
+            dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+
+            row_count = sum(1 for _ in dict_redader_obj)
+            if page not in range(1, row_count + 1):
+                raise PageError(page, max_lines_per_page)
+
+
 
 phone_directory_obj = PhoneDirectoryRepository()
-lines = phone_directory_obj.get_line_dict(page=1, max_lines_per_page=0)
+lines = phone_directory_obj.get_line_dict(page=1, max_lines_per_page=5)
 
 if type(lines) == dict:
     print(*lines.values(), sep='\n')
