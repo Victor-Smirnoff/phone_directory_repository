@@ -137,6 +137,7 @@ class Handler:
         Обрабатывает запросы на редактирование записи в справочнике
         :return: None
         """
+        
 
     def find_line_handler(self):
         """
