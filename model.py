@@ -22,5 +22,6 @@ class PhoneDirectoryModel:
         self.personal_phone = personal_phone
 
     def __str__(self):
-        return (f'{self.__class__.__name__}({self.line_id}, {self.surname}, {self.name}, '
-                f'{self.patronymic}, {self.organization_name}, {self.work_phone}, {self.personal_phone})')
+        return (f'{{“id”: “{self.line_id}”, “фамилия”: “{self.surname}”, “имя: “{self.name}”, '
+                f'“отчество”: “{self.patronymic}”, “название организации”: “{self.organization_name}”, '
+                f'“телефон рабочий”: “{self.work_phone}”, “телефон личный (сотовый)”: “{self.personal_phone}”}}')

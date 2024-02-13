@@ -119,24 +119,41 @@ class PhoneDirectoryRepository:
                 return e
 
     @staticmethod
-    def find_by_id(line_id):
+    def get_phone_directory_model_obj(row):
+        """
+        Метод создает объект класса PhoneDirectoryModel и возвращает его
+        :param row: словарь с данными по строке
+        :return: объект PhoneDirectoryModel
+        """
+        line_id = row['id']
+        surname = row['фамилия']
+        name = row['имя']
+        patronymic = row['отчество']
+        organization_name = row['название организации']
+        work_phone = row['телефон рабочий']
+        personal_phone = row['телефон личный (сотовый)']
+        obj = PhoneDirectoryModel(line_id, surname, name, patronymic, organization_name, work_phone, personal_phone)
+        return obj
+
+    def find_by_id(self, line_id):
         """
         Метод для поиска записи в справочнике по айди записи
         :param line_id: айди записи
-        :return: словарь с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = None
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and int(row['id']) == line_id:
-                        found_line = row
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line is not None:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
                     message = f'Запись с айди “{line_id}” не найдена'
                     raise LineError(message)
@@ -147,27 +164,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_surname(surname):
+    def find_by_surname(self, surname):
         """
         Метод для поиска записи в справочнике по фамилии
         :param surname: фамилия
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['фамилия'] == surname:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(surname)
+                    message = f'Запись с фамилией “{surname}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
@@ -175,27 +193,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_name(name):
+    def find_by_name(self, name):
         """
         Метод для поиска записи в справочнике по имени
         :param name: имя
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['имя'] == name:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(name)
+                    message = f'Запись с именем “{name}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
@@ -203,27 +222,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_patronymic(patronymic):
+    def find_by_patronymic(self, patronymic):
         """
         Метод для поиска записи в справочнике по отчеству
         :param patronymic: отчество
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['отчество'] == patronymic:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(patronymic)
+                    message = f'Запись с отчеством “{patronymic}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
@@ -231,27 +251,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_organization_name(organization_name):
+    def find_by_organization_name(self, organization_name):
         """
         Метод для поиска записи в справочнике по названию организации
         :param organization_name: название организации
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['название организации'] == organization_name:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(organization_name)
+                    message = f'Запись с организацией “{organization_name}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
@@ -259,27 +280,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_work_phone(work_phone):
+    def find_by_work_phone(self, work_phone):
         """
         Метод для поиска записи в справочнике по телефону рабочий
         :param work_phone: телефон рабочий
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['телефон рабочий'] == work_phone:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(work_phone)
+                    message = f'Запись с рабочим телефоном “{work_phone}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
@@ -287,27 +309,28 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    @staticmethod
-    def find_by_personal_phone(personal_phone):
+    def find_by_personal_phone(self, personal_phone):
         """
         Метод для поиска записи в справочнике по телефону личный (сотовый)
         :param personal_phone: телефон личный (сотовый)
-        :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
+        :return: список найденных записей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
                 dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-                found_line = []
+                found_lines = []
 
                 for row in dict_reader_obj:
                     if row and row['телефон личный (сотовый)'] == personal_phone:
-                        found_line.append(row)
+                        obj = self.get_phone_directory_model_obj(row)
+                        found_lines.append(obj)
 
-                if found_line:
-                    return found_line
+                if found_lines:
+                    return found_lines
                 else:
-                    raise LineError(personal_phone)
+                    message = f'Запись с личным телефоном “{personal_phone}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}

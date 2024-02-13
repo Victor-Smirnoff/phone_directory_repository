@@ -167,6 +167,13 @@ class Handler:
                 else:
                     break
 
+            if find_method == '2':
+                result_of_work_func = self.find_line_several_param_handler()
+                if result_of_work_func is None:
+                    continue
+                else:
+                    break
+
     def find_line_one_param_handler(self):
         """
         Метод обрабатывает поиск записей по одному параметру
@@ -202,6 +209,34 @@ class Handler:
         handler = routes[find_param]
         handler()
 
+    def find_line_several_param_handler(self):
+        """
+        Метод обрабатывает поиск записей по нескольким параметрам
+        :return: None если введены числа 1 2 3 4 5 6 7, а иначе False
+        """
+        print()
+        print('Поиск записей возможен по следующим характеристикам:')
+        print('1 - по айди записи')
+        print('2 - по фамилии')
+        print('3 - по имени')
+        print('4 - по отчеству')
+        print('5 - по названию организации')
+        print('6 - по телефону рабочему')
+        print('7 - по телефону личный (сотовый)')
+        print()
+        print('Для поиск записей по нескольким характеристикам введите числа от 1 до 7 через пробел:')
+        print()
+        print('Для выхода введите любой нечисловой символ')
+        print()
+        find_param = input('Для поиска введите через пробел следующие из цифр 1,2,3,4,5,6,7: ')
+        find_param = find_param.split()
+        for param in find_param:
+            if param not in ('1', '2', '3', '4', '5', '6', '7'):
+                return False
+
+
+
+
     def find_by_id_handler(self):
         """
         Метод выполняет обработку поиска по айди
@@ -217,17 +252,19 @@ class Handler:
                 break
 
         line_id = int(line_id)
-        found_line = self.dao_obj.find_by_id(line_id)
-        if type(found_line) is dict:
+        found_lines = self.dao_obj.find_by_id(line_id)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с айди “{line_id}” найдена!')
+            print()
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с айди “{line_id}” не найдена')
             print()
-        print(found_line)
-        print()
+            print(found_lines)
+            print()
 
     def find_by_surname_handler(self):
         """
@@ -237,18 +274,18 @@ class Handler:
         print()
         print('Для поиска по фамилии необходимо ввести фамилию')
         surname = input('Введите фамилию: ')
-        found_line = self.dao_obj.find_by_surname(surname)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_surname(surname)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с фамилией “{surname}” найдена!')
-            print(f'Количество записей найдено “{len(found_line)}”')
+            print(f'Количество записей найдено “{len(found_lines)}”')
             print()
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с фамилией “{surname}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
 
     def find_by_name_handler(self):
@@ -259,18 +296,18 @@ class Handler:
         print()
         print('Для поиска по имени необходимо ввести имя')
         name = input('Введите имя: ')
-        found_line = self.dao_obj.find_by_name(name)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_name(name)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с именем “{name}” найдена!')
-            print(f'Количество записей найдено “{len(found_line)}”')
+            print(f'Количество записей найдено “{len(found_lines)}”')
             print()
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с именем “{name}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
 
     def find_by_patronymic_handler(self):
@@ -281,18 +318,18 @@ class Handler:
         print()
         print('Для поиска по отчеству необходимо ввести отчество')
         patronymic = input('Введите отчество: ')
-        found_line = self.dao_obj.find_by_patronymic(patronymic)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_patronymic(patronymic)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с отчеством “{patronymic}” найдена!')
-            print(f'Количество записей найдено “{len(found_line)}”')
+            print(f'Количество записей найдено “{len(found_lines)}”')
             print()
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с отчеством “{patronymic}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
 
     def find_by_organization_name_handler(self):
@@ -303,18 +340,18 @@ class Handler:
         print()
         print('Для поиска по названию организации необходимо ввести название организации')
         organization_name = input('Введите название организации: ')
-        found_line = self.dao_obj.find_by_organization_name(organization_name)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_organization_name(organization_name)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с названием организации “{organization_name}” найдена!')
-            print(f'Количество записей найдено “{len(found_line)}”')
+            print(f'Количество записей найдено “{len(found_lines)}”')
             print()
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с названием организации “{organization_name}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
 
     def find_by_work_phone_handler(self):
@@ -325,18 +362,18 @@ class Handler:
         print()
         print('Для поиска по телефону рабочему необходимо ввести телефон рабочий')
         work_phone = input('Введите телефон рабочий: ')
-        found_line = self.dao_obj.find_by_work_phone(work_phone)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_work_phone(work_phone)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с телефоном рабочим “{work_phone}” найдена!')
-            print(f'Количество записей найдено “{len(found_line)}”')
+            print(f'Количество записей найдено “{len(found_lines)}”')
             print()
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с телефоном рабочим “{work_phone}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
 
     def find_by_personal_phone_handler(self):
@@ -347,14 +384,14 @@ class Handler:
         print()
         print('Для поиска по телефону личному (сотовому) необходимо ввести телефон личный')
         personal_phone = input('Введите телефон личный: ')
-        found_line = self.dao_obj.find_by_personal_phone(personal_phone)
-        if type(found_line) is list:
+        found_lines = self.dao_obj.find_by_personal_phone(personal_phone)
+        if type(found_lines) is list:
             print()
             print(f'Запись в справочнике с телефоном личным “{personal_phone}” найдена!')
-            print(*found_line, sep='\n')
+            print(*found_lines, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с телефоном личным “{personal_phone}” не найдена')
-            print(found_line)
+            print(found_lines)
             print()
