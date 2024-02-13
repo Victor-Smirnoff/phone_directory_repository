@@ -229,12 +229,49 @@ class Handler:
         print('Для выхода введите любой нечисловой символ')
         print()
         find_param = input('Для поиска введите через пробел следующие из цифр 1,2,3,4,5,6,7: ')
+
         find_param = find_param.split()
         for param in find_param:
             if param not in ('1', '2', '3', '4', '5', '6', '7'):
                 return False
 
+        routes = {
+            '1': {'message': 'Введите айди записи', 'dao_func': self.dao_obj.find_by_id,
+                  'param_name': 'line_id', 'rus_name': 'id'},
+            '2': {'message': 'Введите фамилию', 'dao_func': self.dao_obj.find_by_surname,
+                  'param_name': 'surname', 'rus_name': 'фамилия'},
+            '3': {'message': 'Введите имя', 'dao_func': self.dao_obj.find_by_name,
+                  'param_name': 'name', 'rus_name': 'имя'},
+            '4': {'message': 'Введите отчество', 'dao_func': self.dao_obj.find_by_patronymic,
+                  'param_name': 'patronymic', 'rus_name': 'отчество'},
+            '5': {'message': 'Введите название организации', 'dao_func': self.dao_obj.find_by_organization_name,
+                  'param_name': 'organization_name', 'rus_name': 'название организации'},
+            '6': {'message': 'Введите телефон рабочий', 'dao_func': self.dao_obj.find_by_work_phone,
+                  'param_name': 'work_phone', 'rus_name': 'телефон рабочий'},
+            '7': {'message': 'Введите телефон личный (сотовый)', 'dao_func': self.dao_obj.find_by_personal_phone,
+                  'param_name': 'personal_phone', 'rus_name': 'телефон личный (сотовый)'},
+        }
 
+        for param in find_param:
+            data = input(f'{routes[param]['message']}: ')
+            routes[param]['input'] = data
+
+        params_to_search = [value for value in routes.values() if 'input' in value]
+
+        # словарь для результатов поиска
+        # ключи - это названия переменных, по которым искали
+        # значения - это найденный результат - список или объект класса ошибки
+        search_result = {}
+        for param in params_to_search:
+            param_dao_func = param['dao_func']
+            found_lines = param_dao_func(param['input'])
+            search_result[param['param_name']] = found_lines
+
+        # дальнейший анализ переменной search_result
+        # если по каждому из ключей лежит список с объектами класса PhoneDirectoryModel
+        # и если в каждом списке есть один и тот же объект класса PhoneDirectoryModel
+        # то это и есть искомый результат
+        # а если нету, то вернуть сообщение типа "запись с параметрами {param: value} не найдена"
 
 
     def find_by_id_handler(self):
