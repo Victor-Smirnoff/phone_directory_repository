@@ -258,7 +258,7 @@ class Handler:
 
         params_to_search = [value for value in routes.values() if 'input' in value]
 
-        # словарь для результатов поиска
+        # словарь для записи результатов поиска
         # ключи - это названия переменных, по которым искали
         # значения - это найденный результат - список или объект класса ошибки
         search_result = {}
@@ -273,6 +273,64 @@ class Handler:
         # то это и есть искомый результат
         # а если нету, то вернуть сообщение типа "запись с параметрами {param: value} не найдена"
 
+        if self.check_several_result(search_result):
+            found_lines = self.get_several_result(search_result)
+            print()
+            print('Запись в справочнике найдена!')
+            print()
+            print(f'Найдено записей: {len(found_lines)}')
+            print()
+            print(*found_lines, sep='\n')
+            print()
+        else:
+            print()
+            print(f'Запись в справочнике не найдена')
+            print()
+
+    def check_several_result(self, search_result):
+        """
+        Метод проверяет результаты поиска по нескольким характеристикам
+        :param search_result: словарь с результатами поиска
+        ключи - это параметры, по которым искали запись, а значения - это то что нашли
+        :return: тип bool - True если результат поиска положительный, иначе - False
+        """
+        for result in search_result.values():
+            if type(result) is not list:
+                return False
+
+        res_set_list = []
+        for result in search_result.values():
+            result = set(result)
+            res_set_list.append(result)
+
+        for i in range(1, len(res_set_list)):
+            intersection_result = res_set_list[0] & res_set_list[i]
+            if not intersection_result:
+                return False
+
+        return True
+
+    def get_several_result(self, search_result):
+        """
+        Метод используется после проверки результатов поиска по нескольким характеристикам.
+        Когда точно известно, что есть хотя бы одна найденная запись
+        :param search_result: словарь с результатами поиска
+        ключи - это параметры, по которым искали запись, а значения - это то что нашли
+        :return: список с найденными записями - объектами класса PhoneDirectoryModel
+        """
+        res_set_list = []
+        for result in search_result.values():
+            result = set(result)
+            res_set_list.append(result)
+
+        found_lines = []
+        for i in range(1, len(res_set_list)):
+            intersection_result = res_set_list[0] & res_set_list[i]
+            for obj in intersection_result:
+                if obj not in found_lines:
+                    found_lines.append(obj)
+
+        return found_lines
 
     def find_by_id_handler(self):
         """
