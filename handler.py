@@ -50,6 +50,8 @@ class Handler:
 
             if answer != '1':
                 print()
+                print('Выход в главное меню')
+                print()
                 break
             else:
                 continue
@@ -149,37 +151,50 @@ class Handler:
             find_method = input('Введите 1 или 2: ')
 
             if find_method not in ('1', '2'):
-                break
                 print()
+                print('Выход из меню поиска записей')
+                print()
+                break
 
             if find_method == '1':
-                print('Поиск записей возможен по следующим характеристикам:')
-                print('1 - по айди записи')
-                print('2 - по фамилии')
-                print('3 - по имени')
-                print('4 - по отчеству')
-                print('5 - по названию организации')
-                print('6 - по телефону рабочему')
-                print('7 - по телефону личный (сотовый)')
-                print('Для выхода введите любой символ, отличный от цифр 1-7')
-                print()
-                find_param = input('Для поиска введите одну из следующих цифр 1,2,3,4,5,6,7: ')
-
-                if find_param not in ('1', '2', '3', '4', '5', '6', '7'):
+                result_of_work_func = self.find_line_one_param_handler()
+                if result_of_work_func is None:
+                    continue
+                else:
                     break
 
-                routes = {
-                    '1': self.find_by_id_handler,
-                    '2': self.find_by_sirname_handler,
-                    '3': self.find_by_id_handler,
-                    '4': self.find_by_id_handler,
-                    '5': self.find_by_id_handler,
-                    '6': self.find_by_id_handler,
-                    '7': self.find_by_id_handler,
-                }
+    def find_line_one_param_handler(self):
+        """
+        Метод обрабатывает поиск записей по одному параметру
+        :return: None если введены числа 1,2,3,4,5,6,7, а иначе False
+        """
+        print('Поиск записей возможен по следующим характеристикам:')
+        print('1 - по айди записи')
+        print('2 - по фамилии')
+        print('3 - по имени')
+        print('4 - по отчеству')
+        print('5 - по названию организации')
+        print('6 - по телефону рабочему')
+        print('7 - по телефону личный (сотовый)')
+        print('Для выхода введите любой символ, отличный от цифр 1-7')
+        print()
+        find_param = input('Для поиска введите одну из следующих цифр 1,2,3,4,5,6,7: ')
 
-                handler = routes[find_param]
-                handler()
+        if find_param not in ('1', '2', '3', '4', '5', '6', '7'):
+            return False
+
+        routes = {
+            '1': self.find_by_id_handler,
+            '2': self.find_by_sirname_handler,
+            '3': self.find_by_id_handler,
+            '4': self.find_by_id_handler,
+            '5': self.find_by_id_handler,
+            '6': self.find_by_id_handler,
+            '7': self.find_by_id_handler,
+        }
+
+        handler = routes[find_param]
+        handler()
 
     def find_by_id_handler(self):
         """
@@ -199,10 +214,10 @@ class Handler:
         found_line = self.dao_obj.find_by_id(line_id)
         if type(found_line) is dict:
             print()
-            print('Запись в справочнике найдена!')
+            print(f'Запись в справочнике с айди “{line_id}” найдена!')
         else:
             print()
-            print('Запись в справочнике не найдена')
+            print(f'Запись в справочнике с айди “{line_id}” не найдена')
         print(found_line)
         print()
 
@@ -217,10 +232,10 @@ class Handler:
         found_line = self.dao_obj.find_by_sirname(sirname)
         if type(found_line) is list:
             print()
-            print('Запись в справочнике найдена!')
+            print(f'Запись в справочнике с фамилией “{sirname}” найдена!')
             print(*found_line, sep='\n')
         else:
             print()
-            print('Запись в справочнике не найдена')
+            print(f'Запись в справочнике с фамилией “{sirname}” не найдена')
             print(found_line)
         print()
