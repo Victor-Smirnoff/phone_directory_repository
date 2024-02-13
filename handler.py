@@ -37,7 +37,7 @@ class Handler:
 
             lines = self.dao_obj.get_line_dict(page, max_lines_per_page)
 
-            if type(lines) == dict:
+            if type(lines) is dict:
                 print(*lines.values(), sep='\n')
             else:
                 print(lines)
@@ -54,16 +54,17 @@ class Handler:
             else:
                 continue
 
-    def validate_param(self, param):
+    @staticmethod
+    def validate_param(param):
         """
         Метод для валидации введенных чисел пользователем
         :param param: целое число
         :return: тип bool возвращает True если введенное значение можно преобразовать в int, иначе - False
         """
         try:
-            param = int(param)
+            int(param)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def add_line_handler(self):
@@ -85,19 +86,26 @@ class Handler:
             personal_phone = input('Введите телефон личный (сотовый): ')
             new_line_id = self.dao_obj.get_last_id() + 1
 
-            new_line_obj = PhoneDirectoryModel(new_line_id, sirname, name, patronym, organization_name, work_phone, personal_phone)
+            new_line_obj = PhoneDirectoryModel(new_line_id,
+                                               sirname,
+                                               name,
+                                               patronym,
+                                               organization_name,
+                                               work_phone,
+                                               personal_phone)
 
             try:
                 self.dao_obj.add_line(new_line_obj)
 
-                result_dict = {}
-                result_dict['id'] = new_line_id
-                result_dict['фамилия'] = sirname
-                result_dict['имя'] = name
-                result_dict['отчество'] = patronym
-                result_dict['название организации'] = organization_name
-                result_dict['телефон рабочий'] = work_phone
-                result_dict['телефон личный (сотовый)'] = personal_phone
+                result_dict = {'id': new_line_id,
+                               'фамилия': sirname,
+                               'имя': name,
+                               'отчество': patronym,
+                               'название организации': organization_name,
+                               'телефон рабочий': work_phone,
+                               'телефон личный (сотовый)': personal_phone
+                               }
+
                 print()
                 print('Добавление новой записи в справочник выполнено успешно!')
                 print()
@@ -172,7 +180,7 @@ class Handler:
 
                     line_id = int(line_id)
                     found_line = self.dao_obj.find_by_id(line_id)
-                    if type(found_line) == dict:
+                    if type(found_line) is dict:
                         print()
                         print('Запись в справочнике найдена!')
                     else:
@@ -180,3 +188,9 @@ class Handler:
                         print('Запись в справочнике не найдена')
                     print(found_line)
                     print()
+
+    def find_by_id_handler(self):
+        """
+        Метод выполняет обработку поиска по айди
+        :return:
+        """
