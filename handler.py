@@ -66,7 +66,7 @@ class Handler:
         try:
             int(param)
             return True
-        except Exception:
+        except ValueError:
             return False
 
     def add_line_handler(self):
@@ -186,7 +186,7 @@ class Handler:
         routes = {
             '1': self.find_by_id_handler,
             '2': self.find_by_sirname_handler,
-            '3': self.find_by_id_handler,
+            '3': self.find_by_name_handler,
             '4': self.find_by_id_handler,
             '5': self.find_by_id_handler,
             '6': self.find_by_id_handler,
@@ -234,8 +234,29 @@ class Handler:
             print()
             print(f'Запись в справочнике с фамилией “{sirname}” найдена!')
             print(*found_line, sep='\n')
+            print()
         else:
             print()
             print(f'Запись в справочнике с фамилией “{sirname}” не найдена')
             print(found_line)
+            print()
+
+    def find_by_name_handler(self):
+        """
+        Метод выполняет обработку поиска по имени
+        :return: None
+        """
         print()
+        print('Для поиска по имени необходимо ввести имя')
+        name = input('Введите имя: ')
+        found_line = self.dao_obj.find_by_name(name)
+        if type(found_line) is list:
+            print()
+            print(f'Запись в справочнике с именем “{name}” найдена!')
+            print(*found_line, sep='\n')
+            print()
+        else:
+            print()
+            print(f'Запись в справочнике с именем “{name}” не найдена')
+            print(found_line)
+            print()
