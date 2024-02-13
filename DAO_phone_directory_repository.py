@@ -22,20 +22,20 @@ class PhoneDirectoryRepository:
         try:
             self.validate_page(page, max_lines_per_page)
             with open(CSV_FILE, 'r', encoding='UTF-8') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 if page == 1:
                     result = {}
                     for _ in range(max_lines_per_page):
-                        row = next(dict_redader_obj, None)
+                        row = next(dict_reader_obj, None)
                         if row is not None:
                             result[row['id']] = row
                 else:
                     result = {}
                     for _ in range(page * max_lines_per_page - max_lines_per_page):
-                        next(dict_redader_obj)
+                        next(dict_reader_obj)
                     for _ in range(max_lines_per_page):
-                        row = next(dict_redader_obj, None)
+                        row = next(dict_reader_obj, None)
                         if row is not None:
                             result[row['id']] = row
 
@@ -47,7 +47,8 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def validate_page(self, page, max_lines_per_page):
+    @staticmethod
+    def validate_page(page, max_lines_per_page):
         """
         Метод для валидации входных параметров номер страницы и количества записей на странице
         Если параметры валидные, то метод вернет None, иначе - возбуждает исключение
@@ -55,44 +56,49 @@ class PhoneDirectoryRepository:
         :param max_lines_per_page: количество записей на странице
         :return: None
         """
-        if type(page) != int:
+        if type(page) is not int:
             message = f'Ошибка со входными данными. Некорректный номер страницы “{page}”'
             raise PageError(message)
-        if type(max_lines_per_page) != int:
-            message = f'Ошибка со входными данными. Некорректно указано количество записей на одной странице “{max_lines_per_page}”'
+        if type(max_lines_per_page) is not int:
+            message = (f'Ошибка со входными данными. '
+                       f'Некорректно указано количество записей на одной странице “{max_lines_per_page}”')
             raise PageError(message)
-        if type(max_lines_per_page) == int and max_lines_per_page <= 0:
+        if type(max_lines_per_page) is int and max_lines_per_page <= 0:
             message = f'Ошибка со входными данными. Страницы с номером “{page}” не существует'
             raise PageError(message)
 
         with open(CSV_FILE, 'r', encoding='UTF-8') as csv_file:
-            dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+            dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
-            row_count = sum(1 for _ in dict_redader_obj)
-            pages = (row_count // max_lines_per_page) + 1 if not (row_count % max_lines_per_page) else (row_count // max_lines_per_page) + 2
+            row_count = sum(1 for _ in dict_reader_obj)
+            ml = max_lines_per_page
+            pages = (row_count // ml) + 1 if not (row_count % ml) else (row_count // ml) + 2
             if page not in range(1, pages):
-                message = f'Ошибка со входными данными. Страницы с номером “{page}” не существует. Для “{max_lines_per_page}” в справочнике есть “{pages}” страниц'
+                message = (f'Ошибка со входными данными. Страницы с номером “{page}” не существует. '
+                           f'Для “{max_lines_per_page}” в справочнике есть “{pages}” страниц')
                 raise PageError(message)
 
-    def add_line(self, new_line_obj: PhoneDirectoryModel):
+    @staticmethod
+    def add_line(new_line_obj: PhoneDirectoryModel):
         """
         Метод записывает новую строчку в файл
         :param new_line_obj: объект класса PhoneDirectoryModel
         :return: None
         """
         new_line_id = new_line_obj.line_id
-        sirname = new_line_obj.sirname
+        surname = new_line_obj.surname
         name = new_line_obj.name
-        patronym = new_line_obj.patronym
+        patronymic = new_line_obj.patronymic
         organization_name = new_line_obj.organization_name
         work_phone = new_line_obj.work_phone
         personal_phone = new_line_obj.personal_phone
 
         with (open(CSV_FILE, 'a+', encoding='UTF-8', newline='') as csv_file):
             writer = csv.writer(csv_file, delimiter=';')
-            writer.writerow((new_line_id, sirname, name, patronym, organization_name, work_phone, personal_phone))
+            writer.writerow((new_line_id, surname, name, patronymic, organization_name, work_phone, personal_phone))
 
-    def get_last_id(self):
+    @staticmethod
+    def get_last_id():
         """
         Метод возвращает последний записанный id в csv файле CSV_FILE
         :return: число номер id
@@ -106,9 +112,14 @@ class PhoneDirectoryRepository:
                 if row:
                     last_line = row
 
-            return int(last_line['id'])
+            try:
+                last_id = int(last_line['id'])
+                return last_id
+            except ValueError('Ошибка: значение id записи не является целым числом') as e:
+                return e
 
-    def find_by_id(self, line_id):
+    @staticmethod
+    def find_by_id(line_id):
         """
         Метод для поиска записи в справочнике по айди записи
         :param line_id: айди записи
@@ -116,11 +127,11 @@ class PhoneDirectoryRepository:
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = None
 
-                for row in dict_redader_obj:
+                for row in dict_reader_obj:
                     if row and int(row['id']) == line_id:
                         found_line = row
 
@@ -136,26 +147,27 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_sirname(self, sirname):
+    @staticmethod
+    def find_by_surname(surname):
         """
         Метод для поиска записи в справочнике по фамилии
-        :param sirname: фамилия
+        :param surname: фамилия
         :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
-                    if row and row['фамилия'] == sirname:
+                for row in dict_reader_obj:
+                    if row and row['фамилия'] == surname:
                         found_line.append(row)
 
                 if found_line:
                     return found_line
                 else:
-                    raise LineError(sirname)
+                    raise LineError(surname)
 
         except Exception as e:
             error_type = {str(e)}
@@ -163,7 +175,8 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_name(self, name):
+    @staticmethod
+    def find_by_name(name):
         """
         Метод для поиска записи в справочнике по имени
         :param name: имя
@@ -171,11 +184,11 @@ class PhoneDirectoryRepository:
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
+                for row in dict_reader_obj:
                     if row and row['имя'] == name:
                         found_line.append(row)
 
@@ -190,26 +203,27 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_patronym(self, patronym):
+    @staticmethod
+    def find_by_patronymic(patronymic):
         """
         Метод для поиска записи в справочнике по отчеству
-        :param patronym: отчество
+        :param patronymic: отчество
         :return: список найденных словарей с данными по строке или объект класса LineError если ничего не найдено
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
-                    if row and row['отчество'] == patronym:
+                for row in dict_reader_obj:
+                    if row and row['отчество'] == patronymic:
                         found_line.append(row)
 
                 if found_line:
                     return found_line
                 else:
-                    raise LineError(patronym)
+                    raise LineError(patronymic)
 
         except Exception as e:
             error_type = {str(e)}
@@ -217,7 +231,8 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_organization_name(self, organization_name):
+    @staticmethod
+    def find_by_organization_name(organization_name):
         """
         Метод для поиска записи в справочнике по названию организации
         :param organization_name: название организации
@@ -225,11 +240,11 @@ class PhoneDirectoryRepository:
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
+                for row in dict_reader_obj:
                     if row and row['название организации'] == organization_name:
                         found_line.append(row)
 
@@ -244,7 +259,8 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_work_phone(self, work_phone):
+    @staticmethod
+    def find_by_work_phone(work_phone):
         """
         Метод для поиска записи в справочнике по телефону рабочий
         :param work_phone: телефон рабочий
@@ -252,11 +268,11 @@ class PhoneDirectoryRepository:
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
+                for row in dict_reader_obj:
                     if row and row['телефон рабочий'] == work_phone:
                         found_line.append(row)
 
@@ -271,7 +287,8 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def find_by_personal_phone(self, personal_phone):
+    @staticmethod
+    def find_by_personal_phone(personal_phone):
         """
         Метод для поиска записи в справочнике по телефону личный (сотовый)
         :param personal_phone: телефон личный (сотовый)
@@ -279,11 +296,11 @@ class PhoneDirectoryRepository:
         """
         try:
             with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-                dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+                dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
                 found_line = []
 
-                for row in dict_redader_obj:
+                for row in dict_reader_obj:
                     if row and row['телефон личный (сотовый)'] == personal_phone:
                         found_line.append(row)
 
@@ -303,22 +320,3 @@ class PhoneDirectoryRepository:
         Метод для редактирования записей в справочнике
         :return:
         """
-
-
-
-
-
-# phone_directory_obj = PhoneDirectoryRepository()
-#
-#
-# new_line = 'Андреев;Олег;Игоревич;ООО СпортЛайн;+7 (495) 234-56-78;+7 (923) 456-78-90'.split(';')
-#
-# phone_directory_obj.add_line(*new_line)
-#
-#
-# lines = phone_directory_obj.get_line_dict(page=3, max_lines_per_page=8)
-#
-# if type(lines) == dict:
-#     print(*lines.values(), sep='\n')
-# else:
-#     print(lines)

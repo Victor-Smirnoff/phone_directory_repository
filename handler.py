@@ -11,7 +11,7 @@ class Handler:
 
     def get_line_dict_handler(self):
         """
-        Метод работает в цикле после ввода пользователя цифры 1
+        Метод работает в цикле после ввода пользователя цифры 1.
         Обрабатывает запросы на вывод постранично записей из справочника на экран
         :return: None
         """
@@ -74,7 +74,7 @@ class Handler:
 
     def add_line_handler(self):
         """
-        Метод работает в цикле после ввода пользователя цифры 2
+        Метод работает в цикле после ввода пользователя цифры 2.
         Обрабатывает запросы на добавление новой записи в справочник
         :return: None
         """
@@ -83,18 +83,18 @@ class Handler:
             print()
             print('Для добавления новой записи в справочник необходимо ввести следующие данные')
             print()
-            sirname = input('Введите фамилию: ')
+            surname = input('Введите фамилию: ')
             name = input('Введите имя: ')
-            patronym = input('Введите отчество: ')
+            patronymic = input('Введите отчество: ')
             organization_name = input('Введите название организации: ')
             work_phone = input('Введите телефон рабочий: ')
             personal_phone = input('Введите телефон личный (сотовый): ')
             new_line_id = self.dao_obj.get_last_id() + 1
 
             new_line_obj = PhoneDirectoryModel(new_line_id,
-                                               sirname,
+                                               surname,
                                                name,
-                                               patronym,
+                                               patronymic,
                                                organization_name,
                                                work_phone,
                                                personal_phone)
@@ -103,9 +103,9 @@ class Handler:
                 self.dao_obj.add_line(new_line_obj)
 
                 result_dict = {'id': new_line_id,
-                               'фамилия': sirname,
+                               'фамилия': surname,
                                'имя': name,
-                               'отчество': patronym,
+                               'отчество': patronymic,
                                'название организации': organization_name,
                                'телефон рабочий': work_phone,
                                'телефон личный (сотовый)': personal_phone
@@ -133,14 +133,14 @@ class Handler:
 
     def edit_line_handler(self):
         """
-        Метод работает в цикле после ввода пользователя цифры 3
+        Метод работает в цикле после ввода пользователя цифры 3.
         Обрабатывает запросы на редактирование записи в справочнике
         :return: None
         """
 
     def find_line_handler(self):
         """
-        Метод работает в цикле после ввода пользователя цифры 4
+        Метод работает в цикле после ввода пользователя цифры 4.
         Обрабатывает запросы на поиск записей по одной или нескольким характеристикам
         :return: None
         """
@@ -191,9 +191,9 @@ class Handler:
 
         routes = {
             '1': self.find_by_id_handler,
-            '2': self.find_by_sirname_handler,
+            '2': self.find_by_surname_handler,
             '3': self.find_by_name_handler,
-            '4': self.find_by_patronym_handler,
+            '4': self.find_by_patronymic_handler,
             '5': self.find_by_id_handler,
             '6': self.find_by_id_handler,
             '7': self.find_by_id_handler,
@@ -221,29 +221,31 @@ class Handler:
         if type(found_line) is dict:
             print()
             print(f'Запись в справочнике с айди “{line_id}” найдена!')
+            print()
         else:
             print()
             print(f'Запись в справочнике с айди “{line_id}” не найдена')
+            print()
         print(found_line)
         print()
 
-    def find_by_sirname_handler(self):
+    def find_by_surname_handler(self):
         """
         Метод выполняет обработку поиска по фамилии
         :return: None
         """
         print()
         print('Для поиска по фамилии необходимо ввести фамилию')
-        sirname = input('Введите фамилию: ')
-        found_line = self.dao_obj.find_by_sirname(sirname)
+        surname = input('Введите фамилию: ')
+        found_line = self.dao_obj.find_by_surname(surname)
         if type(found_line) is list:
             print()
-            print(f'Запись в справочнике с фамилией “{sirname}” найдена!')
+            print(f'Запись в справочнике с фамилией “{surname}” найдена!')
             print(*found_line, sep='\n')
             print()
         else:
             print()
-            print(f'Запись в справочнике с фамилией “{sirname}” не найдена')
+            print(f'Запись в справочнике с фамилией “{surname}” не найдена')
             print(found_line)
             print()
 
@@ -267,22 +269,22 @@ class Handler:
             print(found_line)
             print()
 
-    def find_by_patronym_handler(self):
+    def find_by_patronymic_handler(self):
         """
         Метод выполняет обработку поиска по отчеству
         :return: None
         """
         print()
         print('Для поиска по отчеству необходимо ввести отчество')
-        patronym = input('Введите отчество: ')
-        found_line = self.dao_obj.find_by_patronym(patronym)
+        patronymic = input('Введите отчество: ')
+        found_line = self.dao_obj.find_by_patronymic(patronymic)
         if type(found_line) is list:
             print()
-            print(f'Запись в справочнике с отчеством “{patronym}” найдена!')
+            print(f'Запись в справочнике с отчеством “{patronymic}” найдена!')
             print(*found_line, sep='\n')
             print()
         else:
             print()
-            print(f'Запись в справочнике с именем “{patronym}” не найдена')
+            print(f'Запись в справочнике с именем “{patronymic}” не найдена')
             print(found_line)
             print()

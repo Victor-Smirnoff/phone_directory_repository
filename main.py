@@ -5,6 +5,7 @@ from router import Router
 phone_directory_obj = PhoneDirectoryRepository()
 router = Router()
 
+
 def start_servicing():
     """
     Метод запускает цикл обслуживания всей программы
