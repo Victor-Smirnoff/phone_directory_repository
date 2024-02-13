@@ -16,6 +16,7 @@ class Handler:
         :return: None
         """
         while True:
+            print()
             print('Вывод постранично записей из справочника на экран')
 
             page = input('Введите номер страницы: ')
@@ -38,8 +39,10 @@ class Handler:
             lines = self.dao_obj.get_line_dict(page, max_lines_per_page)
 
             if type(lines) is dict:
+                print()
                 print(*lines.values(), sep='\n')
             else:
+                print()
                 print(lines)
 
             print()
@@ -142,6 +145,7 @@ class Handler:
         :return: None
         """
         while True:
+            print()
             print('Поиск записей по одной или нескольким характеристикам')
             print()
             print('Для поиска по одной характеристике напишите 1')
@@ -168,6 +172,7 @@ class Handler:
         Метод обрабатывает поиск записей по одному параметру
         :return: None если введены числа 1,2,3,4,5,6,7, а иначе False
         """
+        print()
         print('Поиск записей возможен по следующим характеристикам:')
         print('1 - по айди записи')
         print('2 - по фамилии')
@@ -176,6 +181,7 @@ class Handler:
         print('5 - по названию организации')
         print('6 - по телефону рабочему')
         print('7 - по телефону личный (сотовый)')
+        print()
         print('Для выхода введите любой символ, отличный от цифр 1-7')
         print()
         find_param = input('Для поиска введите одну из следующих цифр 1,2,3,4,5,6,7: ')
@@ -187,7 +193,7 @@ class Handler:
             '1': self.find_by_id_handler,
             '2': self.find_by_sirname_handler,
             '3': self.find_by_name_handler,
-            '4': self.find_by_id_handler,
+            '4': self.find_by_patronym_handler,
             '5': self.find_by_id_handler,
             '6': self.find_by_id_handler,
             '7': self.find_by_id_handler,
@@ -258,5 +264,25 @@ class Handler:
         else:
             print()
             print(f'Запись в справочнике с именем “{name}” не найдена')
+            print(found_line)
+            print()
+
+    def find_by_patronym_handler(self):
+        """
+        Метод выполняет обработку поиска по отчеству
+        :return: None
+        """
+        print()
+        print('Для поиска по отчеству необходимо ввести отчество')
+        patronym = input('Введите отчество: ')
+        found_line = self.dao_obj.find_by_patronym(patronym)
+        if type(found_line) is list:
+            print()
+            print(f'Запись в справочнике с отчеством “{patronym}” найдена!')
+            print(*found_line, sep='\n')
+            print()
+        else:
+            print()
+            print(f'Запись в справочнике с именем “{patronym}” не найдена')
             print(found_line)
             print()
