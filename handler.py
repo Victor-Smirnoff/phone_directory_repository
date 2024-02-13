@@ -168,29 +168,59 @@ class Handler:
                 if find_param not in ('1', '2', '3', '4', '5', '6', '7'):
                     break
 
-                if find_param == '1':
-                    print()
-                    print('Для поиска по айди записи необходимо ввести целое число id')
-                    line_id = input('Введите айди записи: ')
-                    while True:
-                        if not self.validate_param(line_id):
-                            line_id = input('Введите КОРРЕКТНО айди записи: ')
-                        else:
-                            break
+                routes = {
+                    '1': self.find_by_id_handler,
+                    '2': self.find_by_sirname_handler,
+                    '3': self.find_by_id_handler,
+                    '4': self.find_by_id_handler,
+                    '5': self.find_by_id_handler,
+                    '6': self.find_by_id_handler,
+                    '7': self.find_by_id_handler,
+                }
 
-                    line_id = int(line_id)
-                    found_line = self.dao_obj.find_by_id(line_id)
-                    if type(found_line) is dict:
-                        print()
-                        print('Запись в справочнике найдена!')
-                    else:
-                        print()
-                        print('Запись в справочнике не найдена')
-                    print(found_line)
-                    print()
+                handler = routes[find_param]
+                handler()
 
     def find_by_id_handler(self):
         """
         Метод выполняет обработку поиска по айди
-        :return:
+        :return: None
         """
+        print()
+        print('Для поиска по айди записи необходимо ввести целое число id')
+        line_id = input('Введите айди записи: ')
+        while True:
+            if not self.validate_param(line_id):
+                line_id = input('Введите КОРРЕКТНО айди записи: ')
+            else:
+                break
+
+        line_id = int(line_id)
+        found_line = self.dao_obj.find_by_id(line_id)
+        if type(found_line) is dict:
+            print()
+            print('Запись в справочнике найдена!')
+        else:
+            print()
+            print('Запись в справочнике не найдена')
+        print(found_line)
+        print()
+
+    def find_by_sirname_handler(self):
+        """
+        Метод выполняет обработку поиска по фамилии
+        :return: None
+        """
+        print()
+        print('Для поиска по фамилии необходимо ввести фамилию')
+        sirname = input('Введите фамилию: ')
+        found_line = self.dao_obj.find_by_sirname(sirname)
+        if type(found_line) is list:
+            print()
+            print('Запись в справочнике найдена!')
+            print(*found_line, sep='\n')
+        else:
+            print()
+            print('Запись в справочнике не найдена')
+            print(found_line)
+        print()
