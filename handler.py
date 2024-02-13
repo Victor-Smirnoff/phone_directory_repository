@@ -196,7 +196,7 @@ class Handler:
             '4': self.find_by_patronymic_handler,
             '5': self.find_by_organization_name_handler,
             '6': self.find_by_work_phone_handler,
-            '7': self.find_by_id_handler,
+            '7': self.find_by_personal_phone_handler,
         }
 
         handler = routes[find_param]
@@ -241,6 +241,8 @@ class Handler:
         if type(found_line) is list:
             print()
             print(f'Запись в справочнике с фамилией “{surname}” найдена!')
+            print(f'Количество записей найдено “{len(found_line)}”')
+            print()
             print(*found_line, sep='\n')
             print()
         else:
@@ -261,6 +263,8 @@ class Handler:
         if type(found_line) is list:
             print()
             print(f'Запись в справочнике с именем “{name}” найдена!')
+            print(f'Количество записей найдено “{len(found_line)}”')
+            print()
             print(*found_line, sep='\n')
             print()
         else:
@@ -281,6 +285,8 @@ class Handler:
         if type(found_line) is list:
             print()
             print(f'Запись в справочнике с отчеством “{patronymic}” найдена!')
+            print(f'Количество записей найдено “{len(found_line)}”')
+            print()
             print(*found_line, sep='\n')
             print()
         else:
@@ -301,6 +307,8 @@ class Handler:
         if type(found_line) is list:
             print()
             print(f'Запись в справочнике с названием организации “{organization_name}” найдена!')
+            print(f'Количество записей найдено “{len(found_line)}”')
+            print()
             print(*found_line, sep='\n')
             print()
         else:
@@ -321,10 +329,32 @@ class Handler:
         if type(found_line) is list:
             print()
             print(f'Запись в справочнике с телефоном рабочим “{work_phone}” найдена!')
+            print(f'Количество записей найдено “{len(found_line)}”')
+            print()
             print(*found_line, sep='\n')
             print()
         else:
             print()
             print(f'Запись в справочнике с телефоном рабочим “{work_phone}” не найдена')
+            print(found_line)
+            print()
+
+    def find_by_personal_phone_handler(self):
+        """
+        Метод выполняет обработку поиска по телефону личному (сотовому)
+        :return: None
+        """
+        print()
+        print('Для поиска по телефону личному (сотовому) необходимо ввести телефон личный')
+        personal_phone = input('Введите телефон личный: ')
+        found_line = self.dao_obj.find_by_personal_phone(personal_phone)
+        if type(found_line) is list:
+            print()
+            print(f'Запись в справочнике с телефоном личным “{personal_phone}” найдена!')
+            print(*found_line, sep='\n')
+            print()
+        else:
+            print()
+            print(f'Запись в справочнике с телефоном личным “{personal_phone}” не найдена')
             print(found_line)
             print()
