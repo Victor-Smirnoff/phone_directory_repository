@@ -131,3 +131,52 @@ class Handler:
         Обрабатывает запросы на поиск записей по одной или нескольким характеристикам
         :return: None
         """
+        while True:
+            print('Поиск записей по одной или нескольким характеристикам')
+            print()
+            print('Для поиска по одной характеристике напишите 1')
+            print('Для поиска по нескольким характеристикам напишите 2')
+            print('Для выхода напишите что угодно, кроме 1 и 2')
+            print()
+            find_method = input('Введите 1 или 2: ')
+
+            if find_method not in ('1', '2'):
+                break
+                print()
+
+            if find_method == '1':
+                print('Поиск записей возможен по следующим характеристикам:')
+                print('1 - по айди записи')
+                print('2 - по фамилии')
+                print('3 - по имени')
+                print('4 - по отчеству')
+                print('5 - по названию организации')
+                print('6 - по телефону рабочему')
+                print('7 - по телефону личный (сотовый)')
+                print('Для выхода введите любой символ, отличный от цифр 1-7')
+                print()
+                find_param = input('Для поиска введите одну из следующих цифр 1,2,3,4,5,6,7: ')
+
+                if find_param not in ('1', '2', '3', '4', '5', '6', '7'):
+                    break
+
+                if find_param == '1':
+                    print()
+                    print('Для поиска по айди записи необходимо ввести целое число id')
+                    line_id = input('Введите айди записи: ')
+                    while True:
+                        if not self.validate_param(line_id):
+                            line_id = input('Введите КОРРЕКТНО айди записи: ')
+                        else:
+                            break
+
+                    line_id = int(line_id)
+                    found_line = self.dao_obj.find_by_id(line_id)
+                    if type(found_line) == dict:
+                        print()
+                        print('Запись в справочнике найдена!')
+                    else:
+                        print()
+                        print('Запись в справочнике не найдена')
+                    print(found_line)
+                    print()

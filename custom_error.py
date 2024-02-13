@@ -2,27 +2,20 @@ class PageError(Exception):
     """
     Класс для описания ошибки номера страницы справочника
     """
-    def __init__(self, page_number, max_lines_per_page, message='Ошибка на странице'):
+    def __init__(self, message):
         """
-        Инициализатор класса, принимает номер страницы и инициализирует сообщение об ошибке
-        :param page_number: номер страницы
-        :param max_lines_per_page: максимальное количество записей на одной странице
+        Инициализатор класса, содержит сообщение об ошибке
         :param message: сообщение об ошибке
         """
-        self.page_number = page_number
-        self.max_lines_per_page = max_lines_per_page
-        self.message = f'{message}: {page_number}'
-        super().__init__(self.message)
+        self.message = message
 
     def __str__(self):
         return f'Ошибка со входными данными. Некорректный номер страницы “{self.page_number}” или некорректно указано количество записей на одной странице “{self.max_lines_per_page}”'
 
 
 class LineError(Exception):
-    def __init__(self, param, message='Ошибка поиска записи'):
-        self.param = param
-        self.message = f'{message}: “{self.param}”. Запись не найдена'
-        super().__init__(self.message)
+    def __init__(self, message):
+        self.message = message
 
     def __str__(self):
         return f'{self.message}'

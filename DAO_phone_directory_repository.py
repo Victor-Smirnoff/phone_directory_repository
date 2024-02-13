@@ -56,11 +56,14 @@ class PhoneDirectoryRepository:
         :return: None
         """
         if type(page) != int:
-            raise PageError(page, max_lines_per_page)
+            message = f'Ошибка со входными данными. Некорректный номер страницы “{page}”'
+            raise PageError(message)
         if type(max_lines_per_page) != int:
-            raise PageError(page, max_lines_per_page)
+            message = f'Ошибка со входными данными. Некорректно указано количество записей на одной странице “{max_lines_per_page}”'
+            raise PageError(message)
         if type(max_lines_per_page) == int and max_lines_per_page <= 0:
-            raise PageError(page, max_lines_per_page)
+            message = f'Ошибка со входными данными. Страницы с номером “{page}” не существует'
+            raise PageError(message)
 
         with open(CSV_FILE, 'r', encoding='UTF-8') as csv_file:
             dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
@@ -68,7 +71,8 @@ class PhoneDirectoryRepository:
             row_count = sum(1 for _ in dict_redader_obj)
             pages = (row_count // max_lines_per_page) + 1 if not (row_count % max_lines_per_page) else (row_count // max_lines_per_page) + 2
             if page not in range(1, pages):
-                raise PageError(page, max_lines_per_page)
+                message = f'Ошибка со входными данными. Страницы с номером “{page}” не существует. Для “{max_lines_per_page}” в справочнике есть “{pages}” страниц'
+                raise PageError(message)
 
     def add_line(self, new_line_obj: PhoneDirectoryModel):
         """
@@ -94,11 +98,11 @@ class PhoneDirectoryRepository:
         :return: число номер id
         """
         with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
-            dict_redader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
+            dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
 
             last_line = None
 
-            for row in dict_redader_obj:
+            for row in dict_reader_obj:
                 if row:
                     last_line = row
 
@@ -123,7 +127,8 @@ class PhoneDirectoryRepository:
                 if found_line is not None:
                     return found_line
                 else:
-                    raise LineError(line_id)
+                    message = f'Запись с айди “{line_id}” не найдена'
+                    raise LineError(message)
 
         except Exception as e:
             error_type = {str(e)}
