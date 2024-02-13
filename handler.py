@@ -195,7 +195,7 @@ class Handler:
             '3': self.find_by_name_handler,
             '4': self.find_by_patronymic_handler,
             '5': self.find_by_organization_name_handler,
-            '6': self.find_by_id_handler,
+            '6': self.find_by_work_phone_handler,
             '7': self.find_by_id_handler,
         }
 
@@ -306,5 +306,25 @@ class Handler:
         else:
             print()
             print(f'Запись в справочнике с названием организации “{organization_name}” не найдена')
+            print(found_line)
+            print()
+
+    def find_by_work_phone_handler(self):
+        """
+        Метод выполняет обработку поиска по телефону рабочему
+        :return: None
+        """
+        print()
+        print('Для поиска по телефону рабочему необходимо ввести телефон рабочий')
+        work_phone = input('Введите телефон рабочий: ')
+        found_line = self.dao_obj.find_by_work_phone(work_phone)
+        if type(found_line) is list:
+            print()
+            print(f'Запись в справочнике с телефоном рабочим “{work_phone}” найдена!')
+            print(*found_line, sep='\n')
+            print()
+        else:
+            print()
+            print(f'Запись в справочнике с телефоном рабочим “{work_phone}” не найдена')
             print(found_line)
             print()
