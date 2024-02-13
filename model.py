@@ -26,13 +26,9 @@ class PhoneDirectoryModel:
                 f'“отчество”: “{self.patronymic}”, “название организации”: “{self.organization_name}”, '
                 f'“телефон рабочий”: “{self.work_phone}”, “телефон личный (сотовый)”: “{self.personal_phone}”}}')
 
-    def __repr__(self):
-        return (f'{{“id”: “{self.line_id}”, “фамилия”: “{self.surname}”, “имя: “{self.name}”, '
-                f'“отчество”: “{self.patronymic}”, “название организации”: “{self.organization_name}”, '
-                f'“телефон рабочий”: “{self.work_phone}”, “телефон личный (сотовый)”: “{self.personal_phone}”}}')
-
     def __hash__(self):
-        obj_string = str(self.line_id) + self.surname + self.name + self.patronymic + self.organization_name + self.work_phone + self.personal_phone
+        obj_string = (str(self.line_id) + self.surname + self.name + self.patronymic +
+                      self.organization_name + self.work_phone + self.personal_phone)
         return hash(obj_string)
 
     def __eq__(self, other):

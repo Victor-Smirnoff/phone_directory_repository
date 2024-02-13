@@ -270,8 +270,8 @@ class Handler:
         # дальнейший анализ переменной search_result
         # если по каждому из ключей лежит список с объектами класса PhoneDirectoryModel
         # и если в каждом списке есть один и тот же объект класса PhoneDirectoryModel
-        # то это и есть искомый результат
-        # а если нету, то вернуть сообщение типа "запись с параметрами {param: value} не найдена"
+        # то это и есть искомый результат,
+        # а если нет, то вернуть сообщение типа "запись с параметрами {param: value} не найдена"
 
         if self.check_several_result(search_result):
             found_lines = self.get_several_result(search_result)
@@ -287,7 +287,8 @@ class Handler:
             print(f'Запись в справочнике не найдена')
             print()
 
-    def check_several_result(self, search_result):
+    @staticmethod
+    def check_several_result(search_result):
         """
         Метод проверяет результаты поиска по нескольким характеристикам
         :param search_result: словарь с результатами поиска
@@ -310,7 +311,8 @@ class Handler:
 
         return True
 
-    def get_several_result(self, search_result):
+    @staticmethod
+    def get_several_result(search_result):
         """
         Метод используется после проверки результатов поиска по нескольким характеристикам.
         Когда точно известно, что есть хотя бы одна найденная запись
