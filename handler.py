@@ -157,7 +157,18 @@ class Handler:
                 print()
                 print(f'Запись в справочнике с айди “{line_id}” найдена!')
                 print()
-                self.edit_line_one_param(line_id)
+                print(f'Для редактирования одной характеристики в записи введите 1')
+                print(f'Для редактирования нескольких характеристик в записи введите 2')
+                print(f'Для выхода в главное меню введите что угодно кроме 1 и 2')
+                print()
+                edit_type = input('Введите параметр редактирования записи - число 1 или 2: ')
+                if edit_type not in ('1', '2'):
+                    print()
+                    break
+                if edit_type == '1':
+                    self.edit_line_one_param(line_id)
+                if edit_type == '2':
+                    self.edit_line_several_params(line_id)
                 break
             else:
                 print()
@@ -174,6 +185,7 @@ class Handler:
         :return: объект класса PhoneDirectoryModel с измененным одним параметром
         """
         while True:
+            print()
             print(f'Для редактирования записи в справочнике необходимо выбрать характеристику для изменения')
             print()
             print('1 - изменить фамилию')
@@ -184,8 +196,11 @@ class Handler:
             print('6 - изменить телефон личный (сотовый)')
             print()
             change_param = input('Для выбора характеристики для изменения введите одну из следующих цифр 1,2,3,4,5,6: ')
-            if change_param not in ('1', '2', '3', '4', '5', '6'):
-                change_param = input('Введите КОРРЕКТНО одну из следующих цифр 1,2,3,4,5,6: ')
+            while True:
+                if change_param not in ('1', '2', '3', '4', '5', '6'):
+                    change_param = input('Введите КОРРЕКТНО одну из следующих цифр 1,2,3,4,5,6: ')
+                else:
+                    break
 
             try:
                 phone_directory_model = self.dao_obj.find_by_id(line_id)
@@ -193,15 +208,18 @@ class Handler:
                     phone_directory_model_obj = phone_directory_model[0]
 
                     routes = {
-                        '1': {'param': phone_directory_model_obj.surname, 'input_message': 'Введите фамилию: '},
-                        '2': {'param': phone_directory_model_obj.name, 'input_message': 'Введите имя: '},
-                        '3': {'param': phone_directory_model_obj.patronymic, 'input_message': 'Введите отчество: '},
+                        '1': {'param': phone_directory_model_obj.surname,
+                              'input_message': 'Введите новую фамилию: '},
+                        '2': {'param': phone_directory_model_obj.name,
+                              'input_message': 'Введите новое имя: '},
+                        '3': {'param': phone_directory_model_obj.patronymic,
+                              'input_message': 'Введите новое отчество: '},
                         '4': {'param': phone_directory_model_obj.organization_name,
-                              'input_message': 'Введите название организации: '},
+                              'input_message': 'Введите новое название организации: '},
                         '5': {'param': phone_directory_model_obj.work_phone,
-                              'input_message': 'Введите телефон рабочий: '},
+                              'input_message': 'Введите новый телефон рабочий: '},
                         '6': {'param': phone_directory_model_obj.personal_phone,
-                              'input_message': 'Введите телефон личный (сотовый): '},
+                              'input_message': 'Введите новый телефон личный (сотовый): '},
                     }
 
                     param_value = input(f'{routes[change_param]['input_message']}')
@@ -214,8 +232,9 @@ class Handler:
                     work_phone = routes['5']['param']
                     personal_phone = routes['6']['param']
 
-                    new_obj_phone_directory_model = PhoneDirectoryModel(line_id, surname, name, patronymic,
-                                                  organization_name, work_phone, personal_phone)
+                    new_obj_phone_directory_model = PhoneDirectoryModel(
+                        line_id, surname, name, patronymic, organization_name, work_phone, personal_phone
+                    )
 
                     self.dao_obj.edit_line(new_obj_phone_directory_model)
                     break
@@ -230,6 +249,7 @@ class Handler:
         :return: объект класса PhoneDirectoryModel с измененными параметрами
         """
         while True:
+            print()
             print(f'Для редактирования записи в справочнике необходимо выбрать характеристику для изменения')
             print()
             print('1 - изменить фамилию')
@@ -239,10 +259,56 @@ class Handler:
             print('5 - изменить телефон рабочий')
             print('6 - изменить телефон личный (сотовый)')
             print()
-            print('Для выхода введите любой символ, отличный от цифр 1-6')
-            print()
-            change_param = input('Для выбора характеристик для изменения введите через пробел следующие из цифр 1,2,3,4,5,6: ')
+            change_param = input('Для выбора характеристик введите через пробел следующие из цифр 1,2,3,4,5,6: ')
 
+            while True:
+                change_param = change_param.split()
+                for param in change_param:
+                    if param not in ('1', '2', '3', '4', '5', '6'):
+                        change_param = input('Введите КОРРЕКТНО через пробел следующие из цифр 1,2,3,4,5,6: ')
+                        continue
+                break
+
+            try:
+                phone_directory_model = self.dao_obj.find_by_id(line_id)
+                if type(phone_directory_model) is list:
+                    phone_directory_model_obj = phone_directory_model[0]
+
+                    routes = {
+                        '1': {'param': phone_directory_model_obj.surname,
+                              'input_message': 'Введите новую фамилию: '},
+                        '2': {'param': phone_directory_model_obj.name,
+                              'input_message': 'Введите новое имя: '},
+                        '3': {'param': phone_directory_model_obj.patronymic,
+                              'input_message': 'Введите новое отчество: '},
+                        '4': {'param': phone_directory_model_obj.organization_name,
+                              'input_message': 'Введите новое название организации: '},
+                        '5': {'param': phone_directory_model_obj.work_phone,
+                              'input_message': 'Введите новый телефон рабочий: '},
+                        '6': {'param': phone_directory_model_obj.personal_phone,
+                              'input_message': 'Введите новый телефон личный (сотовый): '},
+                    }
+
+                    for param in change_param:
+                        param_value = input(f'{routes[param]['input_message']}')
+                        routes[param]['param'] = param_value
+
+                    surname = routes['1']['param']
+                    name = routes['2']['param']
+                    patronymic = routes['3']['param']
+                    organization_name = routes['4']['param']
+                    work_phone = routes['5']['param']
+                    personal_phone = routes['6']['param']
+
+                    new_obj_phone_directory_model = PhoneDirectoryModel(
+                        line_id, surname, name, patronymic, organization_name, work_phone, personal_phone
+                    )
+
+                    self.dao_obj.edit_line(new_obj_phone_directory_model)
+                    break
+
+            except LineError as e:
+                print(str(e))
 
     def find_line_handler(self):
         """
@@ -598,48 +664,3 @@ class Handler:
             print(f'Запись в справочнике с телефоном личным “{personal_phone}” не найдена')
             print(found_lines)
             print()
-
-
-
-# from tempfile import NamedTemporaryFile
-# import shutil
-# import csv
-#
-# filename = 'phone_directory_data.csv'
-# temp_file = NamedTemporaryFile(mode='w', encoding='UTF-8', delete=False)
-#
-# line_id = '3'
-# surname = 'Новая фамилия'
-# name = 'Новое имя'
-# patronymic = 'Новое отчество'
-# organization_name = 'Новое название организации'
-# work_phone = 'Новый номер рабочий'
-# personal_phone = 'Новый номер личный'
-#
-# with open(filename, 'r', encoding='UTF-8') as csvfile, temp_file:
-#     reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
-#     # writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
-#     first_string = ';'.join(reader.fieldnames)
-#     print(first_string, file=temp_file)
-#     for row in reader:
-#         if str(row['id']) == str(line_id):
-#             print(f'Обновление строки с айди: “{row['id']}”')
-#             row = {
-#                 'id': line_id,
-#                 'фамилия': surname,
-#                 'имя': name,
-#                 'отчество': patronymic,
-#                 'название организации': organization_name,
-#                 'телефон рабочий': work_phone,
-#                 'телефон личный (сотовый)': personal_phone,
-#             }
-#             string_to_write = ';'.join(row.values())
-#             print(string_to_write, file=temp_file)
-#         else:
-#             if row:
-#                 string_to_write = ';'.join(row.values())
-#                 print(string_to_write, file=temp_file)
-#             else:
-#                 print('', file=temp_file)
-#
-# shutil.move(temp_file.name, filename)
