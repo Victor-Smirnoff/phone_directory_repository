@@ -1,5 +1,6 @@
 from DAO_phone_directory_repository import PhoneDirectoryRepository
 from model import PhoneDirectoryModel
+from custom_error import LineError
 
 
 class Handler:
@@ -138,6 +139,7 @@ class Handler:
         :return: None
         """
         while True:
+            print()
             print('Редактирование записей в справочнике')
             print()
             print('Для редактирования записи в справочнике необходимо ввести айди записи')
@@ -155,15 +157,17 @@ class Handler:
                 print()
                 print(f'Запись в справочнике с айди “{line_id}” найдена!')
                 print()
-
+                self.edit_line_one_param(line_id)
+                break
             else:
                 print()
                 print(f'Запись в справочнике с айди “{line_id}” не найдена')
                 print()
                 print(found_lines)
                 print()
+                break
 
-    def get_edit_line_one_param(self, line_id):
+    def edit_line_one_param(self, line_id):
         """
         Метод выполняет функцию выбора одной характеристики для изменения записи в справочнике
         :param line_id: айди изменяемой линии
@@ -183,8 +187,43 @@ class Handler:
             if change_param not in ('1', '2', '3', '4', '5', '6'):
                 change_param = input('Введите КОРРЕКТНО одну из следующих цифр 1,2,3,4,5,6: ')
 
+            try:
+                phone_directory_model = self.dao_obj.find_by_id(line_id)
+                if type(phone_directory_model) is list:
+                    phone_directory_model_obj = phone_directory_model[0]
 
-    def get_edit_line_several_params(self, line_id):
+                    routes = {
+                        '1': {'param': phone_directory_model_obj.surname, 'input_message': 'Введите фамилию: '},
+                        '2': {'param': phone_directory_model_obj.name, 'input_message': 'Введите имя: '},
+                        '3': {'param': phone_directory_model_obj.patronymic, 'input_message': 'Введите отчество: '},
+                        '4': {'param': phone_directory_model_obj.organization_name,
+                              'input_message': 'Введите название организации: '},
+                        '5': {'param': phone_directory_model_obj.work_phone,
+                              'input_message': 'Введите телефон рабочий: '},
+                        '6': {'param': phone_directory_model_obj.personal_phone,
+                              'input_message': 'Введите телефон личный (сотовый): '},
+                    }
+
+                    param_value = input(f'{routes[change_param]['input_message']}')
+                    routes[change_param]['param'] = param_value
+
+                    surname = routes['1']['param']
+                    name = routes['2']['param']
+                    patronymic = routes['3']['param']
+                    organization_name = routes['4']['param']
+                    work_phone = routes['5']['param']
+                    personal_phone = routes['6']['param']
+
+                    new_obj_phone_directory_model = PhoneDirectoryModel(line_id, surname, name, patronymic,
+                                                  organization_name, work_phone, personal_phone)
+
+                    self.dao_obj.edit_line(new_obj_phone_directory_model)
+                    break
+
+            except LineError as e:
+                print(str(e))
+
+    def edit_line_several_params(self, line_id):
         """
         Метод выполняет функцию выбора характеристик для изменения записи в справочнике
         :param line_id: айди изменяемой линии
@@ -562,45 +601,45 @@ class Handler:
 
 
 
-from tempfile import NamedTemporaryFile
-import shutil
-import csv
-
-filename = 'phone_directory_data.csv'
-temp_file = NamedTemporaryFile(mode='w', encoding='UTF-8', delete=False)
-
-line_id = '2'
-surname = 'Новая фамилия'
-name = 'Новое имя'
-patronymic = 'Новое отчество'
-organization_name = 'Новое название организации'
-work_phone = 'Новый номер рабочий'
-personal_phone = 'Новый номер личный'
-
-with open(filename, 'r', encoding='UTF-8') as csvfile, temp_file:
-    reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
-    writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
-    first_string = ';'.join(reader.fieldnames)
-    print(first_string, file=temp_file)
-    for row in reader:
-        if str(row['id']) == str(line_id):
-            print(f'Обновление строки с айди: “{row['id']}”')
-            row = {
-                'id': line_id,
-                'фамилия': surname,
-                'имя': name,
-                'отчество': patronymic,
-                'название организации': organization_name,
-                'телефон рабочий': work_phone,
-                'телефон личный (сотовый)': personal_phone,
-            }
-            string_to_write = ';'.join(row.values())
-            print(string_to_write, file=temp_file)
-        else:
-            if row:
-                string_to_write = ';'.join(row.values())
-                print(string_to_write, file=temp_file)
-            else:
-                print('', file=temp_file)
-
-shutil.move(temp_file.name, filename)
+# from tempfile import NamedTemporaryFile
+# import shutil
+# import csv
+#
+# filename = 'phone_directory_data.csv'
+# temp_file = NamedTemporaryFile(mode='w', encoding='UTF-8', delete=False)
+#
+# line_id = '3'
+# surname = 'Новая фамилия'
+# name = 'Новое имя'
+# patronymic = 'Новое отчество'
+# organization_name = 'Новое название организации'
+# work_phone = 'Новый номер рабочий'
+# personal_phone = 'Новый номер личный'
+#
+# with open(filename, 'r', encoding='UTF-8') as csvfile, temp_file:
+#     reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
+#     # writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
+#     first_string = ';'.join(reader.fieldnames)
+#     print(first_string, file=temp_file)
+#     for row in reader:
+#         if str(row['id']) == str(line_id):
+#             print(f'Обновление строки с айди: “{row['id']}”')
+#             row = {
+#                 'id': line_id,
+#                 'фамилия': surname,
+#                 'имя': name,
+#                 'отчество': patronymic,
+#                 'название организации': organization_name,
+#                 'телефон рабочий': work_phone,
+#                 'телефон личный (сотовый)': personal_phone,
+#             }
+#             string_to_write = ';'.join(row.values())
+#             print(string_to_write, file=temp_file)
+#         else:
+#             if row:
+#                 string_to_write = ';'.join(row.values())
+#                 print(string_to_write, file=temp_file)
+#             else:
+#                 print('', file=temp_file)
+#
+# shutil.move(temp_file.name, filename)

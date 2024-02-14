@@ -340,10 +340,16 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def edit_line(self, phone_directory_model: PhoneDirectoryModel):
+    @staticmethod
+    def edit_line(phone_directory_model: PhoneDirectoryModel):
         """
-        Метод для редактирования записей в справочнике
-        :param phone_directory_model: готовый объект класса PhoneDirectoryModel с отредактированными данными
+        Метод для редактирования записей в справочнике.
+        Если всё успешно, то метод открывает файл в режиме чтения, создает временный файл tmp.
+        По одной строке читает исходный файл.
+        Если строка требует редактирования, то записывает новую строку во временный файл.
+        Если строка не требуется редактирования, то записывает строку в исходном виде во временный файл.
+        Когда запись завершена, происходит запись содержимого временного файла в основной файл.
+        :param phone_directory_model: Готовый объект класса PhoneDirectoryModel с отредактированными данными
         :return: None или объект ошибки класса ErrorResponse если не получилось перезаписать данные
         """
         try:
@@ -351,14 +357,13 @@ class PhoneDirectoryRepository:
 
             with open(CSV_FILE, 'r', encoding='UTF-8') as csvfile, temp_file:
                 reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
-                writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
                 first_string = ';'.join(reader.fieldnames)
                 print(first_string, file=temp_file)
                 for row in reader:
                     if str(row['id']) == str(phone_directory_model.line_id):
-                        print(f'Обновление строки с айди: “{row['id']}”')
-                        row = {
-                            'id': phone_directory_model.line_id,
+                        print(f'Редактирование строки с айди: “{row['id']}”')
+                        new_row = {
+                            'id': str(phone_directory_model.line_id),
                             'фамилия': phone_directory_model.surname,
                             'имя': phone_directory_model.name,
                             'отчество': phone_directory_model.patronymic,
@@ -366,7 +371,7 @@ class PhoneDirectoryRepository:
                             'телефон рабочий': phone_directory_model.work_phone,
                             'телефон личный (сотовый)': phone_directory_model.personal_phone,
                         }
-                        string_to_write = ';'.join(row.values())
+                        string_to_write = ';'.join(new_row.values())
                         print(string_to_write, file=temp_file)
                     else:
                         if row:
@@ -376,10 +381,13 @@ class PhoneDirectoryRepository:
                             print('', file=temp_file)
 
             shutil.move(temp_file.name, CSV_FILE)
-
+            print()
+            print(f'Редактирование строки с айди: “{new_row['id']}” прошло успешно!')
+            print()
+            print(phone_directory_model)
+            print()
         except Exception as e:
             error_type = {str(e)}
             message = 'Произошла ошибка записи данных в справочник, попробуйте позже'
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
-        
