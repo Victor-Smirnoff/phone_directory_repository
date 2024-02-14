@@ -1,4 +1,6 @@
 import csv
+from tempfile import NamedTemporaryFile
+import shutil
 
 from custom_error import PageError, LineError
 from error_response import ErrorResponse
@@ -338,8 +340,46 @@ class PhoneDirectoryRepository:
             error_response = ErrorResponse(error_type=error_type, message=message)
             return error_response
 
-    def edit_line(self):
+    def edit_line(self, phone_directory_model: PhoneDirectoryModel):
         """
         Метод для редактирования записей в справочнике
-        :return:
+        :param phone_directory_model: готовый объект класса PhoneDirectoryModel с отредактированными данными
+        :return: None или объект ошибки класса ErrorResponse если не получилось перезаписать данные
         """
+        try:
+            temp_file = NamedTemporaryFile(mode='w', encoding='UTF-8', delete=False)
+
+            with open(CSV_FILE, 'r', encoding='UTF-8') as csvfile, temp_file:
+                reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
+                writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
+                first_string = ';'.join(reader.fieldnames)
+                print(first_string, file=temp_file)
+                for row in reader:
+                    if str(row['id']) == str(phone_directory_model.line_id):
+                        print(f'Обновление строки с айди: “{row['id']}”')
+                        row = {
+                            'id': phone_directory_model.line_id,
+                            'фамилия': phone_directory_model.surname,
+                            'имя': phone_directory_model.name,
+                            'отчество': phone_directory_model.patronymic,
+                            'название организации': phone_directory_model.organization_name,
+                            'телефон рабочий': phone_directory_model.work_phone,
+                            'телефон личный (сотовый)': phone_directory_model.personal_phone,
+                        }
+                        string_to_write = ';'.join(row.values())
+                        print(string_to_write, file=temp_file)
+                    else:
+                        if row:
+                            string_to_write = ';'.join(row.values())
+                            print(string_to_write, file=temp_file)
+                        else:
+                            print('', file=temp_file)
+
+            shutil.move(temp_file.name, CSV_FILE)
+
+        except Exception as e:
+            error_type = {str(e)}
+            message = 'Произошла ошибка записи данных в справочник, попробуйте позже'
+            error_response = ErrorResponse(error_type=error_type, message=message)
+            return error_response
+        
