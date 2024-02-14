@@ -137,7 +137,12 @@ class Handler:
         Обрабатывает запросы на редактирование записи в справочнике
         :return: None
         """
-        
+        while True:
+            print('Редактирование записей в справочнике')
+            print()
+            print('Для редактирования записи в справочнике необходимо ввести айди записи')
+            print()
+            line_id = input('Введите айди записи: ')
 
     def find_line_handler(self):
         """
@@ -493,3 +498,48 @@ class Handler:
             print(f'Запись в справочнике с телефоном личным “{personal_phone}” не найдена')
             print(found_lines)
             print()
+
+
+
+from tempfile import NamedTemporaryFile
+import shutil
+import csv
+
+filename = 'phone_directory_data.csv'
+temp_file = NamedTemporaryFile(mode='w', encoding='UTF-8', delete=False)
+
+line_id = '2'
+surname = 'Новая фамилия'
+name = 'Новое имя'
+patronymic = 'Новое отчество'
+organization_name = 'Новое название организации'
+work_phone = 'Новый номер рабочий'
+personal_phone = 'Новый номер личный'
+
+with open(filename, 'r', encoding='UTF-8') as csvfile, temp_file:
+    reader = csv.DictReader(csvfile, delimiter=';', quotechar='"')
+    writer = csv.DictWriter(temp_file, delimiter=';', quotechar='"', fieldnames=reader.fieldnames)
+    first_string = ';'.join(reader.fieldnames)
+    print(first_string, file=temp_file)
+    for row in reader:
+        if str(row['id']) == str(line_id):
+            print(f'Обновление строки с айди: “{row['id']}”')
+            row = {
+                'id': line_id,
+                'фамилия': surname,
+                'имя': name,
+                'отчество': patronymic,
+                'название организации': organization_name,
+                'телефон рабочий': work_phone,
+                'телефон личный (сотовый)': personal_phone,
+            }
+            string_to_write = ';'.join(row.values())
+            print(string_to_write, file=temp_file)
+        else:
+            if row:
+                string_to_write = ';'.join(row.values())
+                print(string_to_write, file=temp_file)
+            else:
+                print('', file=temp_file)
+
+shutil.move(temp_file.name, filename)
