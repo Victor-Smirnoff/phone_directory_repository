@@ -1,10 +1,8 @@
 import unittest
-import io
-import sys
 
 
 from DAO_phone_directory_repository import PhoneDirectoryRepository
-from custom_error import PageError, LineError
+from custom_error import PageError
 from error_response import ErrorResponse
 
 
