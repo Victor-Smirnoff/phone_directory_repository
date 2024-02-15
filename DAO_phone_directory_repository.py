@@ -103,7 +103,7 @@ class PhoneDirectoryRepository:
     def get_last_id():
         """
         Метод возвращает последний записанный id в csv файле CSV_FILE
-        :return: число номер id
+        :return: число номер id или значение ValueError
         """
         with open(CSV_FILE, 'r', encoding='UTF-8', newline='') as csv_file:
             dict_reader_obj = csv.DictReader(csv_file, delimiter=';', quotechar='"')
